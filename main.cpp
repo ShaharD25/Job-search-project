@@ -276,7 +276,7 @@ string EmployerRegister(){
         }
 
         fstream file;
-        string path = R"(C:\DattaBase\Employers\)" + ID + ".txt";
+        string path = R"(C:\DataBase\Employers\)" + ID + ".txt";
         file.open(path , std::ios::in);
         if (file.is_open()) {
             cout << "ID already exists, please try again." << endl;
@@ -308,7 +308,7 @@ string EmployerRegister(){
     if (newEmployerFile(ID , Name , age , password , question , answer ))
     {
         cout << " User creation successfully " << endl;
-        string path = R"(C:\DattaBase\Employers\)" + ID + ".txt";
+        string path = R"(C:\DataBase\Employers\)" + ID + ".txt";
         return path;
     }
 }
@@ -345,7 +345,7 @@ string CandidateRegister() {
         }
 
         fstream file;
-        string path = R"(C:\DattaBase\Employers\)" + ID + ".txt";
+        string path = R"(C:\DataBase\Employers\)" + ID + ".txt";
         file.open(path , std::ios::in);
         if (file.is_open()) {
             cout << "ID already exists, please try again." << endl;
@@ -376,14 +376,14 @@ string CandidateRegister() {
 
     if (newCandidateFile(ID , Name , age , password , question , answer , description , resume)) {
         cout << " User creation successfully " << endl;
-        string path = R"(C:\DattaBase\Candidates\)" + ID + ".txt";
+        string path = R"(C:\DataBase\Candidates\)" + ID + ".txt";
         return path;
     }
 }
 
 bool newEmployerFile(const string& ID , const string& name,const int& age , const string& password , const string& question , const string& answer) {
     std::fstream file;
-    string path = R"(C:\DattaBase\Employers\)" + ID + ".txt";
+    string path = R"(C:\DataBase\Employers\)" + ID + ".txt";
     file.open(path , std::ios::out);
     if (!file)
     {
@@ -399,7 +399,7 @@ bool newEmployerFile(const string& ID , const string& name,const int& age , cons
 }
 bool newCandidateFile(const string& ID , const string& name , const int& age , const string& password , const string& question , const string& answer , const string& description , const string& resume) {
     std::fstream file;
-    string path = R"(C:\DattaBase\Candidates\)" + ID + ".txt";
+    string path = R"(C:\DataBase\Candidates\)" + ID + ".txt";
     file.open(path , std::ios::out);
     if (!file)
     {
@@ -494,7 +494,7 @@ string LogIn (const string& type) {
         break;
     }
     fstream file;
-    string path = R"(C:\DattaBase\)" + type + "\\" + input_ID + ".txt";
+    string path = R"(C:\DataBase\)" + type + "\\" + input_ID + ".txt";
     file.open(path, std::ios::in);
     if (!file.is_open()) {
         cout << " The user does not exist " << endl;
