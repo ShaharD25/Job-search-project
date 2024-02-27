@@ -1,0 +1,3 @@
+C:/Users/shaha/CLionProjects/Jobsearch/cmake-build-debug/CMakeFiles/Jobsearch.dir
+C:/Users/shaha/CLionProjects/Jobsearch/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/shaha/CLionProjects/Jobsearch/cmake-build-debug/CMakeFiles/rebuild_cache.dir
