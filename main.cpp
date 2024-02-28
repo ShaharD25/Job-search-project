@@ -37,6 +37,7 @@ bool updateLineFile(const string& path , const string& input , int lineNumber);
 string stringFromFile(const string& path, int lineNumber);
 
 int main() {
+    cout << " Update " << endl;
     MainMenu();
     return 0;
 }
