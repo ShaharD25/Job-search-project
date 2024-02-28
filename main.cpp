@@ -42,7 +42,6 @@ string stringFromFile(const string& path, int lineNumber);
 
 
 int main() {
-    cout << " Update " << endl;
     MainMenu();
     return 0;
 }
@@ -199,6 +198,7 @@ void JobSearch_Menu() {
     }
 }
 void EditProfileCandidate_Menu (const string& path){
+
 
 }
 void Employer_Menu (const string& path) {
@@ -420,7 +420,7 @@ bool newCandidateFile(const string& ID , const string& name , const int& age , c
 }
 bool newJob(string ID){
     fstream adNumberFile;
-    adNumberFile.open(R"(C:\DattaBase\maintenance\ad_number.txt)", std::ios::in | std::ios::out);
+    adNumberFile.open(R"(C:\DataBase\maintenance\ad_number.txt)", std::ios::in | std::ios::out);
     if (!adNumberFile.is_open())
         return false;
     int adNum;
@@ -449,8 +449,8 @@ bool newJob(string ID){
     cout << "Enter field of employment:" << endl;
     getline(cin, fieldOfEmployment);
     fstream jobFile;
-    string numToPath = stringFromFile(R"(C:\DattaBase\maintenance\ad_number.txt)",0);
-    string path = "C:\\DattaBase\\Jobs\\" + numToPath + ".txt";
+    string numToPath = stringFromFile(R"(C:\DataBase\maintenance\ad_number.txt)",0);
+    string path = "C:\\DataBase\\Jobs\\" + numToPath + ".txt";
     jobFile.open(path,  std::ios::out);
     if (!jobFile.is_open())
         return false;
