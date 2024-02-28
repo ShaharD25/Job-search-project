@@ -10,6 +10,7 @@ using namespace std;
 enum Lines {ID, PASSWORD, NAME, AGE, QUESTION,ANSWER};
 enum Employer_Lines {JOBS = 6};
 enum Candidate_Lines {DESCRIPTION = 6, RESUME, SUBMIT_HISTORY, WISHLIST};
+enum JOB_LINES {AD_NUMBER,TITLE, AREA, SCOPE, SALARY, EXPERIENCE, FIELD, APPLICATORS};
 enum MAIN_MENU { Candidate = '1', Employer = '2' , Guest = '3' , Exit = '4' };
 enum LOGIN_REGISTER { Log_in = '1' , Register = '2' , Back = '3'};
 enum CANDIDATE { Search_Jobs = '1', Submission_History = '2' , Wish_List = '3' , Edit_Profile = '4', Log_out = '5' };
@@ -42,6 +43,7 @@ bool newJob(const string &path);
 bool updateLineFile(const string& path , const string& input , int lineNumber);
 string stringFromFile(const string& path, int lineNumber);
 bool add_str_in_file(const string& path, const string& str, const int &lineNumber);
+void print_job(const string& path);
 
 
 int main() {
@@ -460,7 +462,7 @@ bool newJob(const string &IDPath) {
     jobFile.open(newJobPath, std::ios::out);
     if (!jobFile.is_open())
         return false;
-    jobFile << title << endl << workArea << endl << scope  << endl << salary  << endl << experience << endl << fieldOfEmployment << endl;
+    jobFile << numToPath << endl << title << endl << workArea << endl << scope  << endl << salary  << endl << experience << endl << fieldOfEmployment << endl;
     jobFile.close();
     add_str_in_file(IDPath, numToPath, JOBS);
     return true;
@@ -668,4 +670,27 @@ bool add_str_in_file(const string& path, const string& str, const int &lineNumbe
     updateLineFile(path,linesFromFile[lineNumber],lineNumber);
     file.close();
     return true;
+}
+
+void print_job(const string& path){
+    fstream file;
+    file.open(path, std::ios::in);
+    if (!file.is_open()) {
+        cerr << "Error: Unable to open file " << path << endl;
+    }
+    vector<string> linesFromFile;
+    string line;
+    // Read lines from file and store them in vector
+    while (getline(file, line)) {
+        linesFromFile.push_back(line);
+    }
+    file.close();
+
+    cout << "Ad number: " << linesFromFile[AD_NUMBER] << endl <<
+            "Title: " << linesFromFile[TITLE] << endl <<
+            "Work area: " << linesFromFile[AREA] << endl <<
+            "Scope of Position: " << linesFromFile[SCOPE] << '%' << endl <<
+            "Salary: " << linesFromFile[SALARY] << '$' << endl <<
+            "experience required: " << linesFromFile[EXPERIENCE] << endl <<
+            "Field of employment: " << linesFromFile[FIELD] << endl;
 }
