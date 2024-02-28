@@ -8,6 +8,8 @@
 using namespace std;
 
 enum Lines {ID, PASSWORD, NAME, AGE, QUESTION,ANSWER};
+enum Employer_Lines {JOBS = 6};
+enum Candidate_Lines {DESCRIPTION = 6, RESUME, SUBMIT_HISTORY, WISHLIST};
 enum MAIN_MENU { Candidate = '1', Employer = '2' , Guest = '3' , Exit = '4' };
 enum LOGIN_REGISTER { Log_in = '1' , Register = '2' , Back = '3'};
 enum CANDIDATE { Search_Jobs = '1', Submission_History = '2' , Wish_List = '3' , Edit_Profile = '4', Log_out = '5' };
@@ -36,9 +38,10 @@ bool ResetPassword(const string& path);
 
 bool newEmployerFile(const string& ID , const string& name , const int& age , const string& password , const string& question , const string& answer);
 bool newCandidateFile(const string& ID , const string& name , const int& age , const string& password , const string& question , const string& answer , const string& description , const string& resume);
-bool newJob(string ID);
+bool newJob(const string &path);
 bool updateLineFile(const string& path , const string& input , int lineNumber);
 string stringFromFile(const string& path, int lineNumber);
+bool add_str_in_file(const string& path, const string& str, const int &lineNumber);
 
 
 int main() {
@@ -215,7 +218,7 @@ void Employer_Menu (const string& path) {
         cin >> option;
         switch (option) {
             case Publish_Ad:
-
+                newJob(path);
                 break;
             case Edit_Ad:
 
@@ -370,6 +373,7 @@ string CandidateRegister() {
         cout << " Age must be at least 16, please try again " << endl;
         cin >> age;
     }
+    cin.ignore();
     password = enter_new_password();
     cout << " Enter a question in case you need to reset a password " << endl;
     getline(cin, question);
@@ -398,9 +402,9 @@ bool newEmployerFile(const string& ID , const string& name,const int& age , cons
     }
     else
     {
-        file << ID << endl << password << endl << name << endl << age << endl << question << endl << answer << endl;
+        file << ID << endl << password << endl << name << endl << age << endl << question << endl << answer << endl << endl;
     }
-
+    file.close();
     return true;
 }
 bool newCandidateFile(const string& ID , const string& name , const int& age , const string& password , const string& question , const string& answer , const string& description , const string& resume) {
@@ -414,21 +418,23 @@ bool newCandidateFile(const string& ID , const string& name , const int& age , c
     }
     else
     {
-        file << ID << endl << password << endl << name << endl << age << endl << question << endl << answer << endl << description << endl << resume << endl;
+        file << ID << endl << password << endl << name << endl << age << endl << question << endl << answer << endl << description << endl << resume << endl << endl << endl << endl;
     }
+    file.close();
     return true;
 }
-bool newJob(string ID){
+bool newJob(const string &IDPath) {
     fstream adNumberFile;
     adNumberFile.open(R"(C:\DataBase\maintenance\ad_number.txt)", std::ios::in | std::ios::out);
     if (!adNumberFile.is_open())
         return false;
-    int adNum;
-    adNumberFile >> adNum;
+    int adm;
+    adNumberFile >> adm;
     adNumberFile.seekg(0, ios::beg);
-    adNumberFile << ++adNum;
+    adNumberFile << ++adm;
     adNumberFile.close();
     string title, workArea, experience, fieldOfEmployment , scope, salary;
+    cin.ignore();
     long long scope_temp;
     cout << "you chose to publish a job!" << endl << "please enter the title for the job Ad:" << endl;
     getline(cin,title);
@@ -442,25 +448,21 @@ bool newJob(string ID){
         getline(cin,scope);
         scope_temp = string_to_number(scope);
     }
-    cout << "Enter salary for this job:" << endl;
+    cout << " Enter salary for this job: " << endl;
     getline(cin, salary);
-    cout << "Enter experience required:" << endl;
+    cout << " Enter experience required: " << endl;
     getline(cin, experience);
-    cout << "Enter field of employment:" << endl;
+    cout << " Enter field of employment: " << endl;
     getline(cin, fieldOfEmployment);
     fstream jobFile;
     string numToPath = stringFromFile(R"(C:\DataBase\maintenance\ad_number.txt)",0);
-    string path = "C:\\DataBase\\Jobs\\" + numToPath + ".txt";
-    jobFile.open(path,  std::ios::out);
+    string newJobPath = "C:\\DataBase\\Jobs\\" + numToPath + ".txt";
+    jobFile.open(newJobPath, std::ios::out);
     if (!jobFile.is_open())
         return false;
-    jobFile << title << endl <<
-            "Work area: " << workArea << endl <<
-            "Scope of Position: " << scope << '%' << endl <<
-            "Salary: " << salary << '$' << endl <<
-            "experience required: " << experience << endl <<
-            "Field of employment: " << fieldOfEmployment << endl;
+    jobFile << title << endl << workArea << endl << scope  << endl << salary  << endl << experience << endl << fieldOfEmployment << endl;
     jobFile.close();
+    add_str_in_file(IDPath, numToPath, JOBS);
     return true;
 }
 
@@ -648,4 +650,22 @@ long long string_to_number(string &temp) {
             number += (temp[--i] - '0') * pow(10,j++);
     }
     return number;
+}
+bool add_str_in_file(const string& path, const string& str, const int &lineNumber){
+    fstream file;
+    file.open(path, std::ios::in);
+    if (!file.is_open()) {
+        cerr << "Error: Unable to open file " << path << endl;
+        return false;
+    }
+    vector<string> linesFromFile;
+    string line;
+    // Read lines from file and store them in vector
+    while (getline(file, line)) {
+        linesFromFile.push_back(line);
+    }
+    linesFromFile[lineNumber] +=' ' +  str;
+    updateLineFile(path,linesFromFile[lineNumber],lineNumber);
+    file.close();
+    return true;
 }
