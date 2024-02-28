@@ -3,6 +3,8 @@
 #include <string>
 #include <cctype>
 #include <vector>
+#include <cmath>
+
 using namespace std;
 
 enum Lines {ID, PASSWORD, NAME, AGE, QUESTION,ANSWER};
@@ -21,6 +23,7 @@ void JobSearch_Menu();
 void EditProfileCandidate_Menu (const string& path);
 void Employer_Menu (const string& path);
 void Edit_Ad_Menu ();
+long long string_to_number(string &temp);
 
 string enter_new_password();
 bool resetPassword();
@@ -33,8 +36,10 @@ bool ResetPassword(const string& path);
 
 bool newEmployerFile(const string& ID , const string& name , const int& age , const string& password , const string& question , const string& answer);
 bool newCandidateFile(const string& ID , const string& name , const int& age , const string& password , const string& question , const string& answer , const string& description , const string& resume);
+bool newJob(string ID);
 bool updateLineFile(const string& path , const string& input , int lineNumber);
 string stringFromFile(const string& path, int lineNumber);
+
 
 int main() {
     cout << " Update " << endl;
@@ -413,6 +418,51 @@ bool newCandidateFile(const string& ID , const string& name , const int& age , c
     }
     return true;
 }
+bool newJob(string ID){
+    fstream adNumberFile;
+    adNumberFile.open(R"(C:\DattaBase\maintenance\ad_number.txt)", std::ios::in | std::ios::out);
+    if (!adNumberFile.is_open())
+        return false;
+    int adNum;
+    adNumberFile >> adNum;
+    adNumberFile.seekg(0, ios::beg);
+    adNumberFile << ++adNum;
+    adNumberFile.close();
+    string title, workArea, experience, fieldOfEmployment , scope, salary;
+    long long scope_temp;
+    cout << "you chose to publish a job!" << endl << "please enter the title for the job Ad:" << endl;
+    getline(cin,title);
+    cout << "Enter area of the work place:" << endl;
+    getline(cin, workArea);
+    cout << "Enter scope of the job (integer between 1-100): for example - 88%" << endl;
+    getline(cin,scope);
+    scope_temp = string_to_number(scope);
+    while (scope_temp > 100 || scope_temp < 1) {
+        cout << "The scope is out of range! Try again!";
+        getline(cin,scope);
+        scope_temp = string_to_number(scope);
+    }
+    cout << "Enter salary for this job:" << endl;
+    getline(cin, salary);
+    cout << "Enter experience required:" << endl;
+    getline(cin, experience);
+    cout << "Enter field of employment:" << endl;
+    getline(cin, fieldOfEmployment);
+    fstream jobFile;
+    string numToPath = stringFromFile(R"(C:\DattaBase\maintenance\ad_number.txt)",0);
+    string path = "C:\\DattaBase\\Jobs\\" + numToPath + ".txt";
+    jobFile.open(path,  std::ios::out);
+    if (!jobFile.is_open())
+        return false;
+    jobFile << title << endl <<
+            "Work area: " << workArea << endl <<
+            "Scope of Position: " << scope << '%' << endl <<
+            "Salary: " << salary << '$' << endl <<
+            "experience required: " << experience << endl <<
+            "Field of employment: " << fieldOfEmployment << endl;
+    jobFile.close();
+    return true;
+}
 
 string enter_new_password() {
     string password;
@@ -585,4 +635,17 @@ bool updateLineFile(const string& path , const string& input , int lineNumber) {
         return false;
     }
 }
-
+long long string_to_number(string &temp) {
+    long long number = 0;
+    bool digit_flag = true;
+    for (char c: temp) {
+        if (!isdigit(c))
+            digit_flag = false;
+    }
+    if (digit_flag){
+        long i = temp.length(), j = 0;
+        while (i)
+            number += (temp[--i] - '0') * pow(10,j++);
+    }
+    return number;
+}
