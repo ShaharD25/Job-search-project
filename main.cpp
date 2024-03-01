@@ -5,6 +5,8 @@
 #include <vector>
 #include <cmath>
 #include <sstream>
+#include <algorithm>
+
 using namespace std;
 
 enum Lines {ID, PASSWORD, NAME, AGE, QUESTION, ANSWER};
@@ -59,6 +61,8 @@ void print_All_Jobs ();
 void print_sub_history(const string& path);
 void print_wishList (const string& path);
 void print_candidate(const string& path);
+void print_popular_jobs(const string& path);
+void remove_a_candidate(const string& Ad_path);
 
 int main() {
     MainMenu();
@@ -371,7 +375,7 @@ void Employer_Menu (const string& path) {
                 }
                 break;
             case Print_All_Popularity:
-
+                print_popular_jobs(path);
                 break;
             case Log_out1:
                 cout << " See you next time " << endl;
@@ -1139,6 +1143,69 @@ void print_candidate(const string& path) {
          " Description: " << linesFromFile[DESCRIPTION] << endl <<
          " Resume: " << linesFromFile[RESUME] << endl;
 }
+void print_popular_jobs(const string& path) {
+    string jobs_str = stringFromFile(path, JOBS);
+    vector<string> jobsVector = splitStringBySpace(jobs_str);
+    if (jobsVector.empty()) {
+        cout << " you have no any ads yet " << endl;
+        return;
+    }
+    string job_path;
+    vector<pair<int, string>> applicators_sum;
+    for (long i = jobsVector.size() - 1; i >= 0; --i) {
+        job_path = R"(C:\DataBase\Jobs\)" + jobsVector[i] + ".txt";
+        fstream file;
+        file.open(job_path, std::ios::in);
+        if (!file.is_open())
+            continue;
+        string ID_numbers = stringFromFile(job_path, APPLICATORS);
+        vector<string> ID_numbers_in_vector = splitStringBySpace(ID_numbers);
+        applicators_sum.push_back(make_pair(ID_numbers_in_vector.size(), job_path));
+        file.close();
+    }
 
+    // Sort the vector of pairs based on the first element (the numbers)
+    sort(applicators_sum.rbegin(), applicators_sum.rend());
+    for (const auto& job : applicators_sum) {
+        cout << " The following Ad have " << job.first << " applicators! " << endl;
+        print_job((job.second));
+    }
+}
+void remove_a_candidate(const string& Ad_path) {
+    string applicators_line = stringFromFile(Ad_path, APPLICATORS);
+    vector<string> applicators_vec = splitStringBySpace(applicators_line);
+    cout << " Which candidate wold you like to remove from the list? " << endl;
+    int i = 1, choice;
+    for (const auto &ID: applicators_vec) {
+        cout << ' ' <<  i++ << " - " << ID << endl;
+    }
+    cout << " If you don't want to remove anyone press 0, or anything out of the list above. " << endl;
+    cin >> choice;
+    char authorization;
+    bool flag = true;
+    if ( choice < i && choice > 0) {
+        cout << " You chose " << choice << " - " << applicators_vec.at(choice-1) << ". " << endl << " Are you sure you want to remove this candidate? " << endl
+             << " Select 'Y' for yes or 'N' for no. " << endl;
+        while (flag) {
+            cin >> authorization;
+            if (authorization == 'Y' || authorization == 'y') {
+                applicators_vec.erase(applicators_vec.cbegin() + choice);
+                flag = false;
+            }
+            else if(authorization == 'N' || authorization == 'n') {
+                cout << " You chose not to remove the candidate! " << endl;
+                flag = false;
+            }
+            else {
+                cout << " Wrong answer! try again. " << endl;
+            }
+        }
+    }
+    string applicators_update;
+    for (const auto & update: applicators_vec) {
+        applicators_update += update + ' ';
+    }
+    updateLineFile(Ad_path,applicators_update,APPLICATORS);
+}
 
 
