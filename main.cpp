@@ -1,3 +1,21 @@
+/*
+ Presenters:    Eve Hackmon , 209295914
+                Orel Achrak , 318554532
+                Orpaz Ben Avraham , 318871506
+                Shahar Dahan , 207336355
+                Aviv Nahum , 206291163
+                Sofi Tenenbaum , 320964026
+ GitHub: https://github.com/ShaharD25/Jobsearch.git
+ */
+
+
+/*
+ To run this program, open a folder on drive C called "DataBase", and inside it will be the folders "Candidates", "Employers", "Jobs", and "maintenance".
+ Inside the folder DataBase->maintenance there should be a text file called "ad_number" and it will have the number 1.
+ All this to enable the storage of data inside this folder during the program.
+ Apart from that, do not make any changes to these folders to avoid problems with the program running
+ */
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -6,7 +24,6 @@
 #include <cmath>
 #include <sstream>
 #include <algorithm>
-
 using namespace std;
 
 enum Lines {ID, PASSWORD, NAME, AGE, QUESTION, ANSWER};
@@ -20,7 +37,7 @@ enum CANDIDATE { Search_Jobs = '1', Submission_History = '2' , Wish_List = '3' ,
 enum JOB_SEARCH { Employment = '1' , Area = '2' , Job_scope = '3' , Min_Salary = '4' , Print_All_Jobs = '5' , Back1 = '6' };
 enum EDIT_PROFILE_CANDIDATE { Edit_Name = '1' , Edit_description = '2' , Edit_Password = '3' , Edit_Resume = '4' , Delete_Profile = '5' , Back2 = '6' };
 enum EMPLOYER { Publish_Ad = '1' , Edit_Ad = '2' , Print_All_Ads = '3' , Print_Ad_By_Number = '4' , Print_All_Popularity = '5' , Log_out1 = '6'};
-enum EDIT_AD { Edit_Title = '1' , Edit_Employment = '2' ,Edit_Area = '3' , Edit_Job_Scope = '4' , Edit_min_salary= '5' , Remove_Submission = '6' , Delete_Ad = '7' , Back3 = '8' };
+enum EDIT_AD { Edit_Title = '1' , Edit_Field = '2' ,Edit_Area = '3' , Edit_Job_Scope = '4' , Edit_min_salary= '5' , Edit_Experience = '6' ,Remove_Submission = '7' , Delete_Ad = '8' , Back3 = '9' };
 
 void MainMenu();
 string LogIn_Register_Menu (char x);
@@ -28,13 +45,14 @@ void Candidate_Menu(const string& path);
 void JobSearch_Menu(const string& path);
 int EditProfileCandidate_Menu (const string& path);
 void Employer_Menu (const string& path);
-void Edit_Ad_Menu (const string& path);
+void Edit_Ad_Menu(const string &Ad_path, const string &Employer_path);
 
 long long string_to_number(const string &temp);
 bool containsOnlyDigits(const string& str);
 vector <string> splitStringBySpace(const string& input);
 bool isNonNegativeInteger(const string& str);
 bool isFirstStringContained(const string& str1, const string& str2);
+char UserChoice();
 
 string enter_new_password();
 bool string_to_lower_compare(const string& string1 , const string& string2);
@@ -63,14 +81,14 @@ void print_wishList (const string& path);
 void print_candidate(const string& path);
 void print_popular_jobs(const string& path);
 void remove_a_candidate(const string& Ad_path);
+void delete_Ad(const string& Ad_path, const string& Employer_path);
 
 int main() {
     MainMenu();
     return 0;
 }
 
-void MainMenu()
-{
+void MainMenu() {
     bool exit = false;
     char option;
     string path = "NULL";
@@ -80,7 +98,7 @@ void MainMenu()
         cout << " 2. Employer " << endl;
         cout << " 3. Guest " << endl;
         cout << " 4. Exit " << endl;
-        cin >> option;
+        option = UserChoice();
         switch (option) {
             case Candidate:
                 path = LogIn_Register_Menu('C');
@@ -113,31 +131,37 @@ string LogIn_Register_Menu (char x){
         cout << " 1. Log in " << endl;
         cout << " 2. Register " << endl;
         cout << " 3. back " << endl;
-        cin >> option;
+        option = UserChoice();
         switch (option) {
             case Log_in:
                 if (x == 'C')
                 {
                     string path = LogIn("Candidates");
-                    if (path != "E")
+                    if (path != "E") {
+                        cout << " Welcome " << stringFromFile(path , NAME) << " ! " << endl;
                         return path;
+                    }
                 }
                 else if (x == 'E')
                 {
                     string path = LogIn("Employers");
-                    if (path != "E")
+                    if (path != "E") {
+                        cout << " Welcome " << stringFromFile(path , NAME) << " ! " <<  endl;
                         return path;
+                    }
                 }
                 break;
             case Register:
                 if (x == 'C')
                 {
                     string path = CandidateRegister();
+                    cout << " Welcome " << stringFromFile(path , NAME) << " ! " <<  endl;
                     return path;
                 }
                 else if (x == 'E')
                 {
                     string path = EmployerRegister();
+                    cout << " Welcome " << stringFromFile(path , NAME) << " ! " <<  endl;
                     return path;
                 }
             case Back:
@@ -159,7 +183,7 @@ void Candidate_Menu(const string& path) {
         cout << " 3. Show wishlist " << endl;
         cout << " 4. Edit profile " << endl;
         cout << " 5. Log out " << endl;
-        cin >> option;
+        option = UserChoice();
         switch (option) {
             case Search_Jobs:
                 JobSearch_Menu(path);
@@ -201,36 +225,33 @@ void JobSearch_Menu(const string& path) {
         cout << " 4. Search by starting salary " << endl;
         cout << " 5. Show all jobs " << endl;
         cout << " 6. Back " << endl;
-        cin >> option;
+        option = UserChoice();
         switch (option) {
             case Employment:
-                cin.ignore();
                 cout << " Enter some employment " << endl;
                 getline(cin,input);
                 cout << " In front of you are all the ads for the employment: " << input << endl;
                 job_Search(path , input , FIELD);
                 break;
             case Area:
-                cin.ignore();
                 cout << " Enter some area " << endl;
                 getline(cin,input);
                 cout << " In front of you are all the ads in the area: " << input << endl;
                 job_Search(path , input , AREA);
                 break;
             case Job_scope:
-                cin.ignore();
                 job_scope_search(path);
                 break;
             case Min_Salary:
-                cin.ignore();
                 min_salary_search(path);
                 break;
             case Print_All_Jobs:
-                cin.ignore();
                 cout << " In front of you are all the published ads: " << endl;
                 print_All_Jobs();
-                ad_submission(path);
-                add_to_wishlist(path);
+                if (path != "G") {
+                    ad_submission(path);
+                    add_to_wishlist(path);
+                }
                 break;
             case Back1:
                 exit = true;
@@ -252,12 +273,11 @@ int EditProfileCandidate_Menu (const string& path){
         cout << " 4. Edit resume " << endl;
         cout << " 5. Delete profile " << endl;
         cout << " 6. Back " << endl;
-        cin >> option;
+        option = UserChoice();
         switch (option) {
             case Edit_Name: {
                 string new_name;
-                cin.ignore();
-                cout << "Enter new name :" << endl;
+                cout << " Enter new name :" << endl;
                 getline ( cin , new_name );
                 updateLineFile ( path , new_name , NAME );
                 cout << " Name successfully edited " << endl;
@@ -265,15 +285,13 @@ int EditProfileCandidate_Menu (const string& path){
             break ;
             case Edit_description: {
                 string new_description;
-                cin.ignore();
-                cout << "Enter new description :" << endl;
+                cout << " Enter new description :" << endl;
                 getline ( cin , new_description );
                 updateLineFile ( path , new_description , DESCRIPTION );
                 cout << " Description successfully edited " << endl;
             }
             break ;
             case Edit_Password: {
-                cin.ignore();
                 string new_password = enter_new_password();
                 updateLineFile(path, new_password, PASSWORD);
                 cout << " Password successfully edited " << endl;
@@ -282,8 +300,7 @@ int EditProfileCandidate_Menu (const string& path){
 
             case Edit_Resume: {
                 string new_resume;
-                cin.ignore();
-                cout << "Enter new resume :" << endl;
+                cout << " Enter new resume :" << endl;
                 getline ( cin , new_resume );
                 updateLineFile ( path , new_resume , RESUME );
                 cout << " Resume successfully edited " << endl;
@@ -326,20 +343,31 @@ void Employer_Menu (const string& path) {
         cout << " 4. Print a specific ad with its submissions by ad number " << endl;
         cout << " 5. Print all ads according to the popularity of the submissions " << endl;
         cout << " 6. Log out " << endl;
-        cin >> option;
+        option = UserChoice();
         switch (option) {
             case Publish_Ad:
                 newJob(path);
                 break;
-            case Edit_Ad:
-                print_All_Emp_ads(path , false);
-                //Edit_Ad_Menu(path);
+            case Edit_Ad:{
+                print_All_Emp_ads(path, false);
+                string jobs_str = stringFromFile(path , JOBS);
+                vector <string> jobsVector = splitStringBySpace(jobs_str);
+                cout << " choose Ad from the above to edit: " << endl;
+                string Ad_number_chosen;
+                getline(cin, Ad_number_chosen);
+                for (int i = 0; i < jobsVector.capacity(); ++i) {
+                    if (string_to_lower_compare(Ad_number_chosen , jobsVector[i]))
+                    {
+                        Edit_Ad_Menu(R"(C:\DataBase\Jobs\)" + Ad_number_chosen + ".txt", path);
+                        break;
+                    }
+                }
+            }
                 break;
             case Print_All_Ads:
                 print_All_Emp_ads(path , true);
                 break;
             case Print_Ad_By_Number: {
-                cin.ignore();
                 string input;
                 cout << " Enter an ad number to view it and its submissions " << endl;
                 getline(cin , input);
@@ -388,8 +416,121 @@ void Employer_Menu (const string& path) {
         }
     }
 }
-void Edit_Ad_Menu () {
-    //כאן נרצה להציג את כל המודעות ללא ההגשות, ולבסוף לשאול אאת המשתמש איזה מודעה הוא רוצה לערוך ע"י הכנסת מספר המודעה. לאחר שהכניס מספר מודעה תקין נציג לו את תפריט העריכה.
+void Edit_Ad_Menu(const string &Ad_path, const string &Employer_path) {
+    char option;
+    bool exit = false;
+    while (!exit) {
+        print_job(Ad_path);
+        cout << " Edit Menu: " << endl;
+        cout << " 1. Edit Title " << endl;
+        cout << " 2. Edit Employment " << endl;
+        cout << " 3. Edit Area " << endl;
+        cout << " 4. Edit Job Scope " << endl;
+        cout << " 5. Edit Salary " << endl;
+        cout << " 6. Edit Experience " << endl;
+        cout << " 7. Remove a Candidate " << endl;
+        cout << " 8. Delete Ad " << endl;
+        cout << " 9. Back " << endl;
+
+        cout << " Enter your choice (1-9): " << endl;
+        option = UserChoice();
+        switch (option) {
+            case Edit_Title: { //working
+                // Edit Title
+                string title_update;
+                cout << " Enter new Title :" << endl;
+                getline(cin, title_update);
+                updateLineFile(Ad_path, title_update, TITLE);
+                cout << " Title successfully edited " << endl;
+            }
+                break;
+
+            case Edit_Field: { //working
+                // Edit Employment
+                string employment_update;
+                cout << " Enter new field of employment :" << endl;
+                getline(cin, employment_update);
+                updateLineFile(Ad_path, employment_update, FIELD);
+                cout << " Field of employment successfully edited " << endl;
+            }
+                break;
+            case Edit_Area: { //working
+                // Edit Area
+                string area_update;
+                cout << " Enter new area :" << endl;
+                getline(cin, area_update);
+                updateLineFile(Ad_path, area_update, AREA);
+                cout << " Area successfully edited " << endl;
+            }
+                break;
+            case Edit_Job_Scope: { // working
+                // Edit Job Scope
+                string scope_update;
+                cout << " Enter new scope of the job (integer between 1-100): " << endl;
+                getline(cin,scope_update);
+                long long temp = string_to_number(scope_update);
+                while (temp > 100 || temp < 1) {
+                    cout << " The scope is out of range! Try again! " << endl;
+                    getline(cin,scope_update);
+                    temp = string_to_number(scope_update);
+                }
+                updateLineFile(Ad_path, scope_update, SCOPE);
+                cout << " Scope successfully edited " << endl;
+            }
+                break;
+            case Edit_min_salary:{ //working
+                // Edit Salary
+                string salary_update;
+                cout << " Enter new salary: (integer bigger then 1) " << endl;
+                getline(cin,salary_update);
+                long long temp = string_to_number(salary_update);
+                while (temp < 1) {
+                    cout << " The salary is out of range! Try again! " << endl;
+                    getline(cin,salary_update);
+                    temp = string_to_number(salary_update);
+                }
+                updateLineFile(Ad_path, salary_update, SALARY);
+                cout << " Salary successfully edited " << endl;
+        }
+                break;
+            case Edit_Experience: { //working
+                //Edit Experience
+                string Experince_update;
+                cout << " Enter new Experience: (integer >= 0) " << endl;
+                getline(cin, Experince_update);
+                while (!containsOnlyDigits(Experince_update)){
+                    cout << "Input is not valid! You entered non number character. " << endl << " Please try again! " << endl ;
+                    getline(cin, Experince_update);
+                }
+                long long temp = string_to_number(Experince_update);
+                while (temp < 0) {
+                    cout << " The Experience is out of range! Try again! " << endl;
+                    getline(cin, Experince_update);
+                    temp = string_to_number(Experince_update);
+                }
+                updateLineFile(Ad_path, Experince_update, SALARY);
+                cout << " Experience successfully edited " << endl;
+            }
+                break;
+            case Remove_Submission:
+                // Remove a Candidate
+                remove_a_candidate(Ad_path);
+                break;
+            case Delete_Ad:
+                // Delete Ad
+                delete_Ad(Ad_path,Employer_path);
+                exit = true;
+                break;
+            case Back3:
+                // Back
+                exit = true;
+                break;
+            default:
+                cout << " Invalid choice. Please enter a number between 1 and 9. " << endl;
+                break;
+        }
+    }
+
 }
 
 bool string_to_lower_compare(const string& string1, const string& string2){
@@ -400,7 +541,6 @@ bool string_to_lower_compare(const string& string1, const string& string2){
     return true;
 }
 string EmployerRegister(){
-    cin.ignore();
     string ID;
     string Name;
     int age;
@@ -467,7 +607,6 @@ string EmployerRegister(){
     }
 }
 string CandidateRegister() {
-    cin.ignore();
     string ID;
     string Name;
     int age;
@@ -579,7 +718,6 @@ bool newJob(const string &IDPath) {
     adNumberFile << ++adm;
     adNumberFile.close();
     string title, workArea, experience, fieldOfEmployment , scope, salary;
-    cin.ignore();
     long long temp;
     cout << " you chose to publish a job!" << endl << " please enter the title for the job Ad: " << endl;
     getline(cin,title);
@@ -593,7 +731,7 @@ bool newJob(const string &IDPath) {
         getline(cin,scope);
         temp = string_to_number(scope);
     }
-    cout << " Enter salary for this job: " << endl;
+    cout << " Enter salary for this job: (integer bigger then 1) " << endl;
     getline(cin, salary);
     temp = string_to_number(salary);
     while (temp < 1) {
@@ -604,7 +742,7 @@ bool newJob(const string &IDPath) {
     cout << " Insert several years of experience: " << endl;
     getline(cin, experience);
     while (!isNonNegativeInteger(experience)) {
-        cout << " The input is out of range! Try again! " << endl;
+        cout << " The input is not valid! Try again! " << endl;
         getline(cin,experience);
     }
     cout << " Enter field of employment: " << endl;
@@ -629,7 +767,7 @@ string enter_new_password() {
     bool isValidPassword = false;
 
     while (!isValidPassword) {
-        cout << " Enter a password " << endl;
+        cout << " Enter a password (6 characters, English letters and numbers only. At least one capital letter) " << endl;
         getline(cin, password);
 
         isValidPassword = true;
@@ -679,7 +817,6 @@ string enter_new_password() {
     return password;
 }
 string LogIn (const string& type) {
-    cin.ignore();
     string input_ID;
     while (true) {
         cout << "Enter your ID to log in: " << endl;
@@ -851,6 +988,14 @@ bool isNonNegativeInteger(const string& str) {
             return true;
     }
     return false;
+}
+char UserChoice() {
+    string optionInString;
+    fflush(stdin);
+    getline(cin, optionInString);
+    if (optionInString.length() != 1)
+        return '0';
+    return optionInString[0];
 }
 
 void print_job(const string& path){
@@ -1175,7 +1320,7 @@ void remove_a_candidate(const string& Ad_path) {
     string applicators_line = stringFromFile(Ad_path, APPLICATORS);
     vector<string> applicators_vec = splitStringBySpace(applicators_line);
     cout << " Which candidate wold you like to remove from the list? " << endl;
-    int i = 1, choice;
+    int i = 1 , choice;
     for (const auto &ID: applicators_vec) {
         cout << ' ' <<  i++ << " - " << ID << endl;
     }
@@ -1206,6 +1351,50 @@ void remove_a_candidate(const string& Ad_path) {
         applicators_update += update + ' ';
     }
     updateLineFile(Ad_path,applicators_update,APPLICATORS);
+}
+void delete_Ad(const string& Ad_path, const string& Employer_path){
+    bool flag = true;
+    char authorization;
+    cout << " Are you sure to delete this Ad? " << endl ;
+    print_job(Ad_path);
+    cout << " Select 'Y' for yes or 'N' for no. " << endl;
+    while (flag) {
+        cin >> authorization;
+        if (authorization == 'Y' || authorization == 'y') {
+            string Jobs_line = stringFromFile(Ad_path, JOBS);
+            vector<string> Jobs_vec = splitStringBySpace(Jobs_line);
+            string Ad_num;
+            int i =0;
+            while (Ad_path[17 + i++] != '.') //Ad_path [17] is the start of the ad number in thr path. for example - "C:\DataBase\Jobs\8.txt"
+                Ad_num.push_back(Ad_path[17+i]);
+
+            const char* filename = Ad_path.c_str();
+
+
+            // Try to delete the file
+            if (remove(filename) == 0) {
+                Jobs_vec.erase(std::remove(Jobs_vec.begin(), Jobs_vec.end(), Ad_num), Jobs_vec.end());
+                string Jobs_update;
+                for (const auto & update: Jobs_vec) {
+                    Jobs_update += update + ' ';
+                }
+                updateLineFile(Employer_path, Jobs_update, JOBS);
+                cout << " Ad successfully deleted. " << endl;
+
+            } else {
+                cerr << " Error deleting Ad. "<< endl;
+            }
+
+            flag = false;
+        }
+        else if(authorization == 'N' || authorization == 'n') {
+            cout << " You chose not to remove the Ad! " << endl;
+            flag = false;
+        }
+        else {
+            cout << " Wrong answer! try again. " << endl;
+        }
+    }
 }
 
 
